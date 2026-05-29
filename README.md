@@ -4,9 +4,16 @@
 
 ---
 
-## 🤖 For AI Agents — Read This First
+## 🤖 For AI Agents — Start Here
 
-This file is the **single entry point** for navigating the StepDish repository. Before writing any code or modifying any file, read the relevant docs in the order listed below. Each section tells you exactly where to go for a given concern.
+| Step | Action | File |
+|---|---|---|
+| **1** | Check current task & progress | 👉 [`PROGRESS.md`](./PROGRESS.md) |
+| **2** | Understand operating rules & conventions | [`docs/builders/README.md`](./docs/builders/README.md) |
+| **3** | Read the full task plan + dependencies | [`docs/builders/OVERVIEW.md`](./docs/builders/OVERVIEW.md) |
+| **4** | Find test cases for your task | [`docs/builders/TASK_SPEC.md`](./docs/builders/TASK_SPEC.md) |
+| **5** | Open the task-specific spec doc | `docs/builders/T-XX-*.md` |
+| **6** | Mark done when finished | Update `[ ]` → `[x]` in [`PROGRESS.md`](./PROGRESS.md) |
 
 > **Golden rule:** If a doc exists for your task, follow it. Do not invent conventions.
 
@@ -16,56 +23,60 @@ This file is the **single entry point** for navigating the StepDish repository. 
 
 ```
 /
-├── README.md                        ← You are here. Start here every session.
-├── docs/
-│   ├── PROPOSAL.md                  ← Product vision, goals, source strategy
-│   ├── builders/                    ← Build instructions for AI agents
-│   │   ├── README.md                ← Agent operating rules & session checklist
-│   │   ├── OVERVIEW.md              ← 40-task build plan + dependency graph
-│   │   ├── TASK_SPEC.md             ← Per-task test cases for all 20 tasks
-│   │   ├── T-01-project-setup.md
-│   │   ├── T-02-auth.md
-│   │   ├── T-03-database-schema.md
-│   │   ├── T-04-recipe-editor.md
-│   │   ├── T-05-step-model.md
-│   │   ├── T-06-timers-reminders.md
-│   │   ├── T-07-public-browse.md
-│   │   ├── T-08-recipe-detail.md
-│   │   ├── T-09-revision-history.md
-│   │   ├── T-10-import-flow.md
-│   │   ├── T-11-ai-extraction-tuning.md
-│   │   ├── T-12-equipment-filter.md
-│   │   ├── T-13-ingredient-filter.md
-│   │   ├── T-14-cook-mode-polish.md
-│   │   ├── T-15-analytics-dashboard.md
-│   │   ├── T-16-dietary-tags.md
-│   │   ├── T-17-seo-json-ld.md
-│   │   ├── T-18-api-integration.md
-│   │   ├── T-19-user-profile.md
-│   │   ├── T-20-push-notifications.md
-│   │   ├── APPENDIX-api-conventions.md
-│   │   ├── APPENDIX-definition-of-done.md
-│   │   ├── APPENDIX-error-handling.md
-│   │   └── APPENDIX-testing-standards.md
-│   ├── infra/                       ← Infrastructure & hosting
-│   │   ├── INFRA.md                 ← Architecture, DB, AI layer, env vars
-│   │   └── HOSTING_COST.md          ← Cost breakdown by phase
-│   └── marketing/
-│       └── PRICING_MODELS.md        ← 4 pricing models + recommendation
+├── PROGRESS.md                      ← 🔴 LIVE task board — check every session
+├── README.md                        ← You are here. Navigation index.
+└── docs/
+    ├── PROPOSAL.md                  ← Product vision, goals, source strategy
+    ├── builders/                    ← Build instructions for AI agents
+    │   ├── README.md                ← Agent operating rules & session checklist
+    │   ├── OVERVIEW.md              ← 40-task build plan + dependency graph
+    │   ├── TASK_SPEC.md             ← Per-task test cases for all tasks
+    │   ├── T-01-project-setup.md
+    │   ├── T-02-auth.md
+    │   ├── T-03-database-schema.md
+    │   ├── T-04-recipe-editor.md
+    │   ├── T-05-step-model.md
+    │   ├── T-06-timers-reminders.md
+    │   ├── T-07-public-browse.md
+    │   ├── T-08-recipe-detail.md
+    │   ├── T-09-revision-history.md
+    │   ├── T-10-import-flow.md
+    │   ├── T-11-ai-extraction-tuning.md
+    │   ├── T-12-equipment-filter.md
+    │   ├── T-13-ingredient-filter.md
+    │   ├── T-14-cook-mode-polish.md
+    │   ├── T-15-analytics-dashboard.md
+    │   ├── T-16-dietary-tags.md
+    │   ├── T-17-seo-json-ld.md
+    │   ├── T-18-api-integration.md
+    │   ├── T-19-user-profile.md
+    │   ├── T-20-push-notifications.md
+    │   ├── APPENDIX-api-conventions.md
+    │   ├── APPENDIX-definition-of-done.md
+    │   ├── APPENDIX-error-handling.md
+    │   └── APPENDIX-testing-standards.md
+    ├── infra/                       ← Infrastructure & hosting
+    │   ├── INFRA.md                 ← Architecture, DB, AI layer, env vars
+    │   └── HOSTING_COST.md          ← Cost breakdown by phase
+    └── marketing/
+        └── PRICING_MODELS.md        ← 4 pricing models + recommendation
 ```
 
 ---
 
 ## 🗺️ Navigation by Concern
 
+### "What should I build next?"
+→ [`PROGRESS.md`](./PROGRESS.md) — find the first `[ ]` task
+
 ### "I want to understand the product"
-1. [`docs/PROPOSAL.md`](./docs/PROPOSAL.md) — Vision, features, source strategy, MVP scope
+→ [`docs/PROPOSAL.md`](./docs/PROPOSAL.md) — vision, features, source strategy, MVP scope
 
 ### "I want to start building or pick up a task"
-1. [`docs/builders/README.md`](./docs/builders/README.md) — Agent operating rules, session start checklist
-2. [`docs/builders/OVERVIEW.md`](./docs/builders/OVERVIEW.md) — Full task list, phases, and dependency graph
-3. [`docs/builders/TASK_SPEC.md`](./docs/builders/TASK_SPEC.md) — Acceptance criteria and test cases per task
-4. `docs/builders/T-XX-*.md` — Detailed spec for each individual task
+1. [`docs/builders/README.md`](./docs/builders/README.md) — agent rules, session start checklist
+2. [`docs/builders/OVERVIEW.md`](./docs/builders/OVERVIEW.md) — full task list, phases, dependency graph
+3. [`docs/builders/TASK_SPEC.md`](./docs/builders/TASK_SPEC.md) — acceptance criteria and test cases per task
+4. `docs/builders/T-XX-*.md` — detailed spec for each individual task
 
 ### "I need to implement a specific feature"
 
@@ -119,20 +130,22 @@ This file is the **single entry point** for navigating the StepDish repository. 
 
 | Phase | Tasks | Goal | Status |
 |---|---|---|---|
-| **Phase 1 — MVP** | T-01 → T-09 | Core recipe editor + public browse | 🔲 Not started |
-| **Phase 2 — Import & AI** | T-10 → T-13 | URL import, AI extraction, filters | 🔲 Not started |
-| **Phase 3 — Polish & Scale** | T-14 → T-20 | Cook mode, analytics, SEO, push, API | 🔲 Not started |
+| **Phase 1 — MVP** | T-001 → T-022 | Core recipe editor + public browse | 🔲 0 / 22 done |
+| **Phase 2 — Import & AI** | T-023 → T-031 | URL import, AI extraction, filters | 🔲 0 / 9 done |
+| **Phase 3 — Discovery & Scale** | T-032 → T-040 | Cook mode, analytics, SEO, push, API | 🔲 0 / 9 done |
 
 ---
 
 ## ⚡ Quick Rules for AI Agents
 
-1. **Always read the task spec before coding** — `docs/builders/T-XX-*.md` for the relevant task.
-2. **Never skip the Definition of Done** — every task must pass `APPENDIX-definition-of-done.md`.
-3. **Follow API conventions exactly** — endpoints, error shapes, and status codes are defined in `APPENDIX-api-conventions.md`.
-4. **Do not store secrets in code** — all credentials go in environment variables per `docs/infra/INFRA.md`.
-5. **One task per PR** — keep changes scoped; reference the task ID in the PR title (e.g., `[T-04] Recipe editor`).
-6. **Tests are mandatory** — unit + integration tests per `APPENDIX-testing-standards.md` before marking done.
+1. **Check `PROGRESS.md` first** — find your next task before reading anything else.
+2. **Always read the task spec before coding** — `docs/builders/T-XX-*.md` for the relevant task.
+3. **Never skip the Definition of Done** — every task must pass `APPENDIX-definition-of-done.md`.
+4. **Follow API conventions exactly** — endpoints, error shapes, and status codes in `APPENDIX-api-conventions.md`.
+5. **Do not store secrets in code** — all credentials go in environment variables per `docs/infra/INFRA.md`.
+6. **One task per PR** — keep changes scoped; reference the task ID in the PR title e.g. `[T-004] Clerk auth`.
+7. **Tests are mandatory** — unit + integration tests per `APPENDIX-testing-standards.md` before marking done.
+8. **Mark done in `PROGRESS.md`** — change `[ ]` → `[x]` and commit with `progress(T-XXX): mark complete`.
 
 ---
 
