@@ -2,7 +2,7 @@
 
 > **For AI coding agents.** This document is the entry point. Read this first, then open the relevant `TASK_SPEC.md` section before writing any code.
 >
-> **Version 1.1 | May 2026**
+> **Version 1.2 | May 2026**
 
 ---
 
@@ -24,14 +24,19 @@ StepDish is a structured recipe management web application. Users create, update
 **Core tech stack:**
 - **Frontend:** Next.js 14 (App Router, TypeScript)
 - **Backend:** Next.js API Routes (REST)
-- **Database:** PostgreSQL via Prisma ORM — deploy on **Railway or Supabase, Singapore region** (`ap-southeast-1`) for low latency from Hong Kong
+- **Database:**
+  - **Phase 1 (MVP):** CockroachDB Serverless — free tier (5 GiB + 50M RUs/mo), Prisma `cockroachdb` connector, GCP Singapore region
+  - **Phase 3 (Scale):** Migrate to Supabase (Singapore `ap-southeast-1`) to unlock `pgvector` for AI-powered recipe similarity search and realtime features
+  - See [`docs/infra/INFRA.md § Database Strategy`](../infra/INFRA.md) for the full migration plan
 - **Auth:** Clerk (50,000 MAU free tier)
 - **AI:** OpenAI GPT-4o — called **server-side via Vercel API routes only** (never from client). Vercel servers originate the request outside HK, making this HK-safe. See [`docs/infra/INFRA.md`](../infra/INFRA.md) for details and Azure OpenAI fallback.
 - **Storage:** Cloudflare R2 (images) — zero egress fees, HK edge PoP
-- **Search:** PostgreSQL full-text (Phase 1), Typesense (Phase 3)
+- **Search:** PostgreSQL/CockroachDB full-text (Phase 1), Typesense (Phase 3)
 - **Hosting:** Vercel — deploy to **Singapore (`sin1`) region** for optimal HK latency
 
 > ⚠️ **HK Developer Note:** OpenAI blocks direct API calls originating from Hong Kong IP addresses. This is a non-issue for production (API calls come from Vercel servers, not your machine), but you cannot test AI extraction locally without a VPN or Azure OpenAI fallback. See [`docs/infra/INFRA.md § OpenAI & HK`](../infra/INFRA.md) for the full solution.
+
+> 🐚 **`schema.prisma` note:** Use `provider = "cockroachdb"` (not `"postgresql"`) in the datasource block. All models, relations, and migrations work identically. See T-002.
 
 ---
 
@@ -53,7 +58,7 @@ StepDish is a structured recipe management web application. Users create, update
 ### Setup & Infrastructure
 
 - [ ] **T-001** — Initialise Next.js project with TypeScript, ESLint, Prettier
-- [ ] **T-002** — Configure PostgreSQL database and Prisma ORM
+- [ ] **T-002** — Configure CockroachDB Serverless and Prisma ORM (`provider = "cockroachdb"`)
 - [ ] **T-003** — Define and run database schema migrations (all Phase 1 tables)
 - [ ] **T-004** — Integrate Clerk authentication (sign up, log in, session)
 - [ ] **T-005** — Set up Cloudflare R2 storage client and image upload utility
@@ -105,15 +110,16 @@ StepDish is a structured recipe management web application. Users create, update
 ## Phase 3 — Discovery & Scale (Tasks T-032 to T-040)
 
 > Goal: Ratings, comments, analytics, and search scale.
+> 🔄 **DB migration:** Migrate from CockroachDB Serverless → Supabase (Singapore) at the start of Phase 3 to unlock `pgvector`, realtime subscriptions, and Row Level Security. See [`docs/infra/INFRA.md § Database Migration Plan`](../infra/INFRA.md).
 
 - [ ] **T-032** — Recipe rating system (1–5 stars, one per user, editable)
 - [ ] **T-033** — Comment threads (create, edit, delete, author pin)
 - [ ] **T-034** — Author analytics dashboard (views, saves, remixes, ratings, 30-day trend)
-- [ ] **T-035** — Typesense search integration (replace PostgreSQL FTS)
+- [ ] **T-035** — Typesense search integration (replace CockroachDB FTS)
 - [ ] **T-036** — Publisher/API source connector (BigOven or Edamam)
 - [ ] **T-037** — Offline cook mode (Service Worker, cache recipe steps)
 - [ ] **T-038** — Push notifications for timer alerts (Web Push API)
-- [ ] **T-039** — Recipe image generation (AI-generated hero image on import)
+- [ ] **T-039** — Recipe image generation + similarity search via `pgvector` (Supabase)
 - [ ] **T-040** — Admin content moderation panel
 
 ---
@@ -122,7 +128,7 @@ StepDish is a structured recipe management web application. Users create, update
 
 ```
 T-001 (project init)
-  └── T-002 (database)
+  └── T-002 (CockroachDB + Prisma)
         └── T-003 (schema migrations)
               ├── T-004 (auth) ─────────────────────────────┐
               ├── T-006 (recipe API)                        │
@@ -156,6 +162,7 @@ T-001 (project init)
 - **TypeScript strict mode is on.** No `any` types without an explicit comment explaining why.
 - **Read `CONVENTIONS.md` before writing UI components.** Design tokens and component patterns are defined there.
 - **Never call OpenAI from the client or from a local dev machine without a VPN.** All AI calls must go through server-side API routes. See [`docs/infra/INFRA.md`](../infra/INFRA.md).
+- **Use `provider = "cockroachdb"` in `schema.prisma`**, not `"postgresql"`. CockroachDB is serializable-only — do not assume Read Committed semantics.
 
 ---
 
