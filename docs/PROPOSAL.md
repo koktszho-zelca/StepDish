@@ -1,172 +1,333 @@
 # StepDish — Product Proposal
 
-> **Version 1.1 | May 2026** — Added equipment section and ingredient-based filtering
+> **Version:** 1.0 · **Date:** May 2026 · **Status:** Draft for Review
 
 ---
 
 ## Overview
 
-StepDish is a structured recipe management platform where users record, update, and browse cooking recipes as living, actionable workflows. Unlike static recipe notes or bookmarking tools, every recipe in StepDish is broken down into discrete steps — each with ingredients, duration, action type, equipment, and optional reminders — making it suitable for real-time in-kitchen use.
+StepDish is a structured recipe platform that turns cooking from a note-taking habit into a repeatable, guided workflow. Unlike static recipe apps, StepDish models each recipe as a sequence of **atomic steps** — each with ingredients, actions, durations, reminders, and equipment — so users can record, refine, and execute recipes with precision.
 
-The platform supports two modes: **personal recipe authoring** (users create and maintain their own collection) and **community/import browsing** (users explore curated recipes sourced from licensed APIs and AI-processed articles).
+Users can author recipes from scratch, import them from URLs or articles (processed by AI into structured steps), and browse a growing catalog of published recipes online. Recipes are living documents: every edit is versioned, so users can track how a dish evolved over time.
+
+```
+┌─────────────────────────────────────────────────────────┐
+│                     S T E P D I S H                     │
+│                                                         │
+│   "Your recipes. Structured. Guided. Always evolving."  │
+└─────────────────────────────────────────────────────────┘
+```
 
 ---
 
-## Problem
+## The Problem
 
-Home cooks frequently rely on imprecise sources: long-form blog articles, screenshots, or memory. Recipe instructions are rarely structured for execution — they mix prose with timings, skip reminders, and are hard to update as a cook refines their approach. Existing apps either lock content or provide no structured step model. Critically, no mainstream recipe tool lets cooks filter by the equipment they actually own, or by the ingredients already in their fridge.
+Home cooks face three recurring frustrations:
+
+1. **Recipes are static** — bookmarked pages or screenshots that can't be edited or personalised over time.
+2. **Steps are vague** — "cook until done" with no timer, no reminder, no context.
+3. **Import is manual** — copying from articles or videos into a notes app loses all structure.
+
+StepDish solves all three: structured steps with timers, editable and versioned recipes, and AI-powered import from any text source.
 
 ---
 
-## Solution — StepDish
+## Target Users
 
-StepDish treats every recipe as a structured object with version history. The core step model captures everything needed to cook with confidence:
-
-| Field | Description | Example |
+| Segment | Need | Primary Feature |
 |---|---|---|
-| **Action** | Verb describing what to do | Sauté, Chop, Simmer |
-| **Ingredients** | Linked quantities and items | 2 cloves garlic, minced |
-| **Duration** | Time to complete the step | 8 min |
-| **Equipment** | Specific tools or appliances required | Cast iron pan, Stand mixer, Oven at 200°C |
-| **Reminder** | Alert or checkpoint note | Stir every 2 min |
-| **Notes** | Optional tips or variations | Add chili flakes here |
-
-At the recipe level, an **Equipment List** is automatically compiled from all step-level equipment fields, giving cooks a complete checklist before they start. Users can also tag recipes with a canonical equipment set (e.g., "requires: wok", "requires: blender") that powers filtering.
-
-![StepDish app interface — structured recipe steps with timers and reminders](https://user-gen-media-assets.s3.amazonaws.com/gpt4o_images/23f14950-1364-401b-af3b-baae1290955b.png)
-
-Users can update any step at any time, and the app maintains a revision history so cooking improvements are never lost.
+| Home cook (daily) | Repeatable, precise cooking | Cook Mode with step timers |
+| Recipe experimenter | Track recipe iterations | Version history |
+| Meal planner | Browse by ingredient / equipment | Filtered browse |
+| Content curator | Import from articles/blogs | AI extraction pipeline |
 
 ---
 
-## Key Features
+## Core Features
 
-### Recipe Editor
-- Create structured recipes with ingredient linking, step ordering, and metadata (servings, cuisine, total time)
-- Equipment field on every step — auto-compiled into a recipe-level equipment checklist
-- Step-by-step cook mode with in-progress timer and reminder alerts
-- Markdown-style notes on each step for tips and variations
-- Full revision history — revert to any prior version of a recipe
+### 1 · Recipe Editor
 
-### Import & AI Extraction
-- Paste any article URL or copy text from a recipe webpage
-- AI pipeline extracts title, ingredient list, steps, timing, **and equipment** per step
-- Auto-assigns action labels (chop, mix, bake) and duration estimates
-- Flags low-confidence extractions for user review before saving
+A structured editor where each recipe is built step by step.
 
-### Browse & Discover
-- Public recipe gallery with search by ingredient, cuisine, time, difficulty, **and equipment**
-- **Filter by ingredients you have** — users enter ingredients on hand; gallery shows only recipes fully or mostly covered by those ingredients
-- **Filter by equipment you own** — multi-select equipment tags (wok, oven, blender, etc.) to narrow recipes to what is actually cookable at home
-- Recipes sourced from licensed APIs and publisher partnerships
-- AI-normalized format — all browsed recipes use the same structured step model
-- Save-to-collection and remix (copy to own editor for personal edits)
+```
+Recipe: Soy Glazed Salmon
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+Step 1  │ Action: Pat salmon dry
+        │ Duration: 1 min
+        │ Equipment: paper towel
+        │ Reminder: —
 
-### Reminders & Timers
-- Per-step countdown timers launchable from the step card
-- Custom reminder messages: text alert, audio ping, or visual cue
-- Parallel timers for recipes with overlapping steps (e.g., sauce simmering while pasta boils)
+Step 2  │ Action: Mix soy sauce, mirin, honey
+        │ Ingredients: 3 tbsp soy sauce · 2 tbsp mirin · 1 tbsp honey
+        │ Duration: 2 min
+        │ Equipment: mixing bowl
+        │ Reminder: —
+
+Step 3  │ Action: Sear salmon skin-side down
+        │ Duration: 4 min
+        │ Equipment: frying pan
+        │ Reminder: ⏰ Flip after 4 min
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+```
+
+**Step fields:**
+- `action` — what to do
+- `ingredients` — what to use (name, quantity, unit, optional flag)
+- `durationSeconds` — timer for this step
+- `equipment` — tools required
+- `reminder` — alert text (shown when timer ends or at step start)
+- `notes` — freeform tips or variations
+
+### 2 · Cook Mode
+
+A full-screen guided overlay that walks users through each step one at a time. Features:
+
+- Large step display with auto-advancing timer
+- Ingredient summary for the current step
+- Voice readout via Web Speech API
+- Screen wake lock (device stays on while cooking)
+- Progress persists across page reloads (sessionStorage)
+- Completion screen with confetti animation
+
+### 3 · Recipe Import (AI Pipeline)
+
+Users paste a URL or raw article text. The AI pipeline:
+
+```
+Input text / URL
+      │
+      ▼
+┌─────────────────────┐
+│  Text extraction    │  Strip HTML, clean whitespace
+└─────────┬───────────┘
+          │
+          ▼
+┌─────────────────────┐
+│  AI extraction      │  GPT-4o structured output
+│  (prompt v2)        │  → title, servings, steps[]
+└─────────┬───────────┘
+          │
+          ▼
+┌─────────────────────┐
+│  Post-processing    │  Duration inference, ingredient
+│                     │  normalisation, equipment detection
+└─────────┬───────────┘
+          │
+          ▼
+┌─────────────────────┐
+│  Confidence check   │  < 0.5 → retry with focused prompt
+└─────────┬───────────┘
+          │
+          ▼
+   Structured recipe
+   (ready for editor)
+```
+
+### 4 · Browse & Discover
+
+A public catalog of user-published recipes. Filterable by:
+- **Cuisine** (Chinese, Italian, Japanese…)
+- **Total time** (< 30 min, < 1 hr, any)
+- **Ingredients you have** — fuzzy subset match via trigram similarity
+- **Equipment you own** — subset match against step equipment
+- **Dietary tags** (vegetarian, gluten-free, dairy-free)
+
+### 5 · Version History
+
+Every save creates a version snapshot. Users can:
+- Browse the timeline of changes ("added chilli flakes", "reduced cook time")
+- Restore any previous version
+- Compare two versions side by side (diff view)
 
 ---
 
-## Content Source Strategy
+## Recipe Data Sources
 
-Sourcing high-quality recipe content is the highest-risk area of the platform. The recommended approach uses a three-phase funnel: start with compliant licensed APIs, expand through publisher partnerships, and restrict unofficial scraping to user-personal use only.
+Sourcing external recipes for the catalog requires careful legal and technical evaluation.
 
-![StepDish AI content pipeline — sources flow through AI extraction into structured recipe steps](https://user-gen-media-assets.s3.amazonaws.com/gpt4o_images/02236f07-57af-4272-a7f5-a2b4f6d40a28.png)
+### Recommended Sources
 
-| Source | Type | Risk | Phase |
-|---|---|---|---|
-| **BigOven API** | Licensed API | Low — formal API terms | Phase 1 |
-| **Edamam API** | Licensed API | Low — formal API terms | Phase 1 |
-| **User-authored** | First-party | None | Phase 1 |
-| **URL import (personal)** | User-initiated scrape | Medium — fair use / personal only | Phase 2 |
-| **Publisher partnerships** (e.g. Serious Eats) | Licensing deal | Low when formalized | Phase 2–3 |
-| **Apify / third-party scrapers** | Unofficial | Higher — compliance review required | Phase 3 only if needed |
+| Source | Type | Legal Risk | Quality | Notes |
+|---|---|---|---|---|
+| **User-authored** | Original | None | High | Core of the platform |
+| **BigOven API** | Licensed API | Low | Medium | Structured recipe data with formal API terms |
+| **Edamam API** | Licensed API | Low | High | Nutrition data + recipe metadata |
+| **Direct publisher partnership** | Licensed content | Low | High | Business development required (e.g. Serious Eats) |
+| **Apify / scraper platforms** | Third-party scraping | Medium | Medium | Fast to prototype; review ToS carefully |
+| **DIY article importer** | User-initiated import | Low (user's own use) | Variable | User pastes URL; platform extracts for personal use only |
 
-### AI Preprocessing Pipeline
+### Phased Source Strategy
 
-When users import a recipe article, the AI extraction pipeline runs as follows:
+```
+Phase 1 (MVP)          Phase 2 (Growth)        Phase 3 (Scale)
+───────────────        ────────────────        ───────────────
+User-authored          + BigOven API           + Publisher deals
++ URL importer         + Edamam enrichment     + Licensed catalog
+(personal use)         + Community sharing     + Curated collections
+```
 
-1. **Ingest** — fetch and clean article HTML, strip ads and boilerplate
-2. **Detect** — identify title, servings, ingredients block, instructions block
-3. **Segment** — split instructions into atomic steps at sentence/clause boundaries
-4. **Classify** — tag each step with action type, ingredient references, duration, and **equipment**
-5. **Normalize** — map to StepDish internal schema; compile recipe-level equipment list
-6. **Review queue** — flag any step with confidence below threshold for user confirmation before saving
-
-This pipeline applies to both user-initiated URL imports and internally sourced API recipes being reformatted into the step model.
+> **Note:** DIY scraping of sites like Allrecipes, NYT Cooking, or BBC Food without explicit permission creates legal and maintenance risk. The recommended approach is to use licensed APIs for the public catalog and restrict URL import to personal-use workflows.
 
 ---
 
 ## Tech Stack
 
-| Layer | Technology | Rationale |
+```
+┌──────────────────────────────────────────────────────────┐
+│                        FRONTEND                          │
+│   Next.js 15 (App Router)  ·  TypeScript  ·  Tailwind   │
+│   Lucide icons  ·  ShadCN/UI base components             │
+└──────────────────────────┬───────────────────────────────┘
+                           │ HTTP / Server Actions
+┌──────────────────────────▼───────────────────────────────┐
+│                         BACKEND                          │
+│   Next.js Route Handlers  ·  Prisma ORM  ·  Clerk auth   │
+│   OpenAI GPT-4o (extraction)  ·  pg_trgm (fuzzy search) │
+└──────────────────────────┬───────────────────────────────┘
+                           │
+┌──────────────────────────▼───────────────────────────────┐
+│                        DATABASE                          │
+│   PostgreSQL (Supabase or Neon)                          │
+│   Tables: User · Recipe · Step · Ingredient · Equipment  │
+│           RecipeVersion · RecipeEvent · StepEquipment    │
+└──────────────────────────────────────────────────────────┘
+```
+
+### Key Technical Decisions
+
+| Decision | Choice | Rationale |
 |---|---|---|
-| **Frontend** | Next.js (React) | SSR for public browse SEO, client-side for editor |
-| **Backend API** | Node.js / Express or Fastify | Lightweight REST + WebSocket for live timers |
-| **Database** | PostgreSQL | Structured step model, revision history, JSONB for metadata |
-| **Search** | PostgreSQL full-text (Phase 1) → Typesense | Fast enough for MVP; ingredient/equipment filter uses indexed tags |
-| **AI Layer** | OpenAI GPT-4o or Claude API | Step extraction, classification, normalization, equipment detection |
-| **Auth** | Clerk or Auth.js | User accounts, social login |
-| **Hosting** | Vercel (frontend) + Railway or Render (API) | Fast MVP deployment, low ops overhead |
-| **Storage** | Cloudflare R2 | Recipe images and user uploads |
+| Framework | Next.js 15 | Full-stack, file-based routing, Server Actions |
+| Auth | Clerk | Fastest to integrate, supports social login |
+| Database | PostgreSQL | Relational model suits recipe/step hierarchy |
+| ORM | Prisma | Type-safe queries, good migration tooling |
+| AI | OpenAI GPT-4o | Best structured output accuracy for extraction |
+| Search | pg_trgm | Fuzzy ingredient/name search without extra service |
+| Hosting | Vercel + Supabase | Minimal infrastructure for solo/small team |
+
+---
+
+## Data Model (Simplified)
+
+```
+Recipe
+├── id, title, description, servings
+├── authorId → User
+├── status (draft | published)
+├── cuisine, tags[], totalTimeSeconds
+│
+├── Step[]
+│   ├── id, order, action, durationSeconds
+│   ├── reminder, notes
+│   ├── Ingredient[]  (name, qty, unit, isOptional)
+│   └── StepEquipment[] → Equipment
+│
+├── RecipeVersion[]   (snapshot on each save)
+└── RecipeEvent[]     (view, cook_start, cook_complete)
+```
 
 ---
 
 ## MVP Phases
 
-### Phase 1 — Core (Weeks 1–8)
-**Goal:** Usable recipe editor with publishing.
-- User auth (sign up, log in)
-- Recipe editor: title, servings, cuisine, ingredients, structured steps with **equipment field**
-- Step timer and reminders (client-side)
-- Revision history (basic)
-- Public recipe browse page with time, cuisine, and **equipment filters**
-- One licensed recipe source connected (BigOven or Edamam API)
+### Phase 1 — Foundation (Weeks 1–4)
 
-### Phase 2 — Import & Enrichment (Weeks 9–16)
-**Goal:** Reduce friction for capturing recipes from the web.
-- URL/article import with AI extraction pipeline (includes equipment detection)
-- Confidence-based review queue for imported steps
-- Ingredient normalization (unit conversion, quantity parsing)
-- **Filter by ingredients you have** (ingredient match scoring)
-- Save-to-collection from browse
-- Remix (copy any recipe to personal editor)
+Goal: working recipe editor + cook mode for personal use.
 
-### Phase 3 — Discovery & Scale (Weeks 17–24)
-**Goal:** Grow browsable catalog and improve quality.
-- Full-text search with all filters (ingredient, time, cuisine, difficulty, equipment)
-- Publisher partnership integration (if formalized)
-- Parallel timers for multi-step overlap
-- Recipe rating and comment threads
-- Analytics dashboard for recipe performance
+- [ ] Auth (Clerk) + user accounts
+- [ ] Recipe CRUD (create, edit, delete)
+- [ ] Step editor with all fields
+- [ ] Cook Mode overlay with timers
+- [ ] Basic recipe list (private, owner only)
+- [ ] Mobile-responsive layout
+
+**Milestone:** User can create a recipe and cook from it on their phone.
+
+---
+
+### Phase 2 — Import & Browse (Weeks 5–8)
+
+Goal: AI import pipeline + public recipe browsing.
+
+- [ ] URL import with AI extraction
+- [ ] Text paste import
+- [ ] Post-processing (duration inference, ingredient normalisation)
+- [ ] Publish/unpublish toggle
+- [ ] Public browse page
+- [ ] Search by title, cuisine, total time
+- [ ] Ingredient filter (pg_trgm)
+- [ ] Equipment filter
+
+**Milestone:** User can import a recipe from an article URL and publish it.
+
+---
+
+### Phase 3 — Quality & Retention (Weeks 9–12)
+
+Goal: polish, analytics, and version history.
+
+- [ ] Version history (snapshot + restore)
+- [ ] Cook Mode polish (voice readout, wake lock, completion screen)
+- [ ] Analytics dashboard (views, cook starts, completions)
+- [ ] Licensed API integration (BigOven or Edamam)
+- [ ] Recipe tagging + dietary filters
+- [ ] Performance + SEO (recipe structured data / JSON-LD)
+
+**Milestone:** Full MVP ready for public beta.
+
+---
+
+## Timeline
+
+```
+Week  1  2  3  4  5  6  7  8  9  10 11 12
+      ├──────────┤
+      │ Phase 1  │
+      Foundation  ├──────────┤
+                  │ Phase 2  │
+                  Import &    ├──────────┤
+                  Browse      │ Phase 3  │
+                              Quality &
+                              Retention
+                                         ▲
+                                    Public Beta
+```
+
+---
+
+## Success Metrics (Beta)
+
+| Metric | Target (3 months post-launch) |
+|---|---|
+| Registered users | 500 |
+| Recipes created | 2,000 |
+| Cook Mode sessions | 1,000 |
+| Recipes imported via URL | 300 |
+| Published recipes | 500 |
+| Average steps per recipe | ≥ 5 |
 
 ---
 
 ## Risks & Mitigations
 
-| Risk | Impact | Mitigation |
-|---|---|---|
-| Content rights (scraping) | High | Use licensed APIs first; restrict URL import to personal-use framing |
-| AI extraction accuracy | Medium | Confidence scoring + user review queue; never silently auto-publish |
-| Equipment taxonomy drift | Medium | Use a canonical equipment tag list (controlled vocabulary); allow user aliases |
-| Ingredient matching quality | Medium | Normalize ingredient names via a food ontology or fuzzy match; show partial match scores |
-| Timer/reminder reliability | Medium | Use Web Workers and Notification API; test across iOS/Android browsers |
-| Recipe schema rigidity | Low | Store step extras as flexible JSONB; schema migrations are cheap in Phase 1 |
-| Cold start (no content) | Medium | Seed catalog via BigOven/Edamam API on launch; feature user-authored picks |
+| Risk | Likelihood | Impact | Mitigation |
+|---|---|---|---|
+| AI extraction quality low | Medium | High | Multi-pass fallback; human review flag |
+| Content rights issues | Medium | High | Licensed APIs first; restrict scraping to personal import |
+| Low user retention | Medium | High | Cook Mode as daily driver; reminder notifications |
+| Step editor UX too complex | Low | Medium | Progressive disclosure; simple mode for casual users |
+| Competitor parity | Low | Low | Differentiate on structured steps + version history |
 
 ---
 
-## Name & Brand Direction
+## Next Steps
 
-**Product name: StepDish**
-- Reflects the structured step-by-step model
-- "Dish" is universally understood in a food context
-- Short, easy to search, available as a neutral brand
-
-**Brand tone:** practical, warm, and confident — for home cooks who take cooking seriously but are not professional chefs. Visual direction: warm beige surfaces, teal primary accent, clean sans-serif, minimal decoration.
+1. **Confirm name** — StepDish is the working name; register domain and social handles.
+2. **Set up repo** — monorepo with Next.js, Prisma, Clerk. ✅ Done.
+3. **Design system** — establish tokens, typography, and colour palette.
+4. **Phase 1 sprint** — assign T-01 through T-08 tickets from `/docs/builders/`.
+5. **API key setup** — OpenAI, Clerk, Supabase/Neon, BigOven/Edamam.
 
 ---
 
-*Proposal prepared May 2026. v1.1 updated May 2026 to add equipment section and ingredient-based filtering.*
+*StepDish · Internal proposal document · Not for external distribution*
