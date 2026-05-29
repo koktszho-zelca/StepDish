@@ -2,7 +2,7 @@
 
 > **For AI coding agents.** This document is the entry point. Read this first, then open the relevant `TASK_SPEC.md` section before writing any code.
 >
-> **Version 1.0 | May 2026**
+> **Version 1.1 | May 2026**
 
 ---
 
@@ -13,6 +13,7 @@
 3. For each task, open `TASK_SPEC.md` and find the matching Task ID.
 4. Complete the task, run the test cases listed, then mark the task done.
 5. Never skip a task or reorder tasks within a phase without checking dependencies.
+6. For infrastructure decisions, region choices, and cost estimates see [`docs/infra/INFRA.md`](../infra/INFRA.md).
 
 ---
 
@@ -21,14 +22,16 @@
 StepDish is a structured recipe management web application. Users create, update, and browse recipes as step-by-step workflows with ingredients, equipment, timers, and reminders. Recipes can also be imported from URLs and processed by an AI extraction pipeline.
 
 **Core tech stack:**
-- Frontend: Next.js 14 (App Router, TypeScript)
-- Backend: Next.js API Routes (REST)
-- Database: PostgreSQL via Prisma ORM
-- Auth: Clerk
-- AI: OpenAI GPT-4o (recipe extraction)
-- Storage: Cloudflare R2 (images)
-- Search: PostgreSQL full-text (Phase 1), Typesense (Phase 3)
-- Hosting: Vercel (frontend + API)
+- **Frontend:** Next.js 14 (App Router, TypeScript)
+- **Backend:** Next.js API Routes (REST)
+- **Database:** PostgreSQL via Prisma ORM — deploy on **Railway or Supabase, Singapore region** (`ap-southeast-1`) for low latency from Hong Kong
+- **Auth:** Clerk (50,000 MAU free tier)
+- **AI:** OpenAI GPT-4o — called **server-side via Vercel API routes only** (never from client). Vercel servers originate the request outside HK, making this HK-safe. See [`docs/infra/INFRA.md`](../infra/INFRA.md) for details and Azure OpenAI fallback.
+- **Storage:** Cloudflare R2 (images) — zero egress fees, HK edge PoP
+- **Search:** PostgreSQL full-text (Phase 1), Typesense (Phase 3)
+- **Hosting:** Vercel — deploy to **Singapore (`sin1`) region** for optimal HK latency
+
+> ⚠️ **HK Developer Note:** OpenAI blocks direct API calls originating from Hong Kong IP addresses. This is a non-issue for production (API calls come from Vercel servers, not your machine), but you cannot test AI extraction locally without a VPN or Azure OpenAI fallback. See [`docs/infra/INFRA.md § OpenAI & HK`](../infra/INFRA.md) for the full solution.
 
 ---
 
@@ -43,7 +46,7 @@ StepDish is a structured recipe management web application. Users create, update
 
 ---
 
-## Phase 1 — Core (Tasks T-001 to T-020)
+## Phase 1 — Core (Tasks T-001 to T-022)
 
 > Goal: A working recipe editor with auth, structured steps, timers, and a public browse page.
 
@@ -122,10 +125,10 @@ T-001 (project init)
   └── T-002 (database)
         └── T-003 (schema migrations)
               ├── T-004 (auth) ─────────────────────────────┐
-              ├── T-006 (recipe API)                                 │
-              │     └── T-007 (step API)                              │
-              └── T-008 (equipment tags)                              │
-                    ├── T-009 (editor header UI) ←────────────────┘
+              ├── T-006 (recipe API)                        │
+              │     └── T-007 (step API)                    │
+              └── T-008 (equipment tags)                    │
+                    ├── T-009 (editor header UI) ←──────────┘
                     │     ├── T-010 (step list UI)
                     │     │     └── T-011 (step drawer UI)
                     │     │           ├── T-012 (equipment list)
@@ -152,7 +155,8 @@ T-001 (project init)
 - **One task per commit.** Commit message format: `feat(T-XXX): short description`.
 - **TypeScript strict mode is on.** No `any` types without an explicit comment explaining why.
 - **Read `CONVENTIONS.md` before writing UI components.** Design tokens and component patterns are defined there.
+- **Never call OpenAI from the client or from a local dev machine without a VPN.** All AI calls must go through server-side API routes. See [`docs/infra/INFRA.md`](../infra/INFRA.md).
 
 ---
 
-*Overview prepared May 2026.*
+*Overview updated May 2026. For infra spec and cost estimates see [`docs/infra/INFRA.md`](../infra/INFRA.md).*
