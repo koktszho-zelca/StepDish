@@ -1,6 +1,6 @@
 # StepDish — User Stories
 
-> **Version 1.0 | May 2026**
+> **Version 1.1 | May 2026** — Added US-025 (filter by equipment) and US-026 (filter by ingredients on hand); updated US-013
 
 User stories are organized by feature area and MVP phase. Each story follows the format:
 > *As a [role], I want to [action], so that [benefit].*
@@ -59,18 +59,19 @@ Acceptance criteria are listed under each story.
 **Acceptance Criteria:**
 - [ ] User can enter: title, cuisine type, serving count, total estimated time
 - [ ] User can add one or more steps
-- [ ] Each step supports: action, ingredient(s), duration, tool, reminder text, and notes
+- [ ] Each step supports: action, ingredient(s), duration, equipment, reminder text, and notes
 - [ ] Steps can be reordered via drag-and-drop
 - [ ] Recipe can be saved as draft (private) or published (public)
 - [ ] Empty required fields (title, at least one step) show inline validation errors
+- [ ] A recipe-level equipment list is auto-compiled from all step equipment fields
 
 ---
 
 **US-004 — Add Structured Steps**
-> As a home cook, I want each recipe step to have structured fields (action, ingredients, duration, reminder), so that I can follow precise cooking instructions without missing anything.
+> As a home cook, I want each recipe step to have structured fields (action, ingredients, equipment, duration, reminder), so that I can follow precise cooking instructions without missing anything.
 
 **Acceptance Criteria:**
-- [ ] Step form includes: action label (dropdown + custom), ingredient selector, duration (minutes/seconds), tool, reminder message, free-text notes
+- [ ] Step form includes: action label (dropdown + custom), ingredient selector, duration (minutes/seconds), equipment (text + tag picker), reminder message, free-text notes
 - [ ] Steps are numbered automatically
 - [ ] A step can be added, deleted, or duplicated
 - [ ] At least one step is required to save a recipe
@@ -81,7 +82,7 @@ Acceptance criteria are listed under each story.
 > As a home cook, I want to edit any part of an existing recipe at any time, so that I can refine it as I improve my cooking.
 
 **Acceptance Criteria:**
-- [ ] All recipe fields and steps are editable after creation
+- [ ] All recipe fields, steps, and equipment tags are editable after creation
 - [ ] Saving creates a new revision (does not overwrite without confirmation)
 - [ ] User sees a "last updated" timestamp on the recipe
 - [ ] Changes are auto-saved as draft while editing (no data loss on accidental close)
@@ -155,7 +156,7 @@ Acceptance criteria are listed under each story.
 
 **Acceptance Criteria:**
 - [ ] Public recipe gallery is accessible without an account
-- [ ] Gallery shows recipe card: title, image, cuisine, total time, step count
+- [ ] Gallery shows recipe card: title, image, cuisine, total time, step count, equipment tags
 - [ ] Recipes load in a paginated or infinite-scroll layout
 - [ ] Gallery is mobile-friendly
 
@@ -166,7 +167,7 @@ Acceptance criteria are listed under each story.
 
 **Acceptance Criteria:**
 - [ ] Search bar is visible on the browse page
-- [ ] Search queries match against title, ingredients, and cuisine
+- [ ] Search queries match against title, ingredients, cuisine, and equipment tags
 - [ ] Results update as the user types (debounced)
 - [ ] Empty results show a helpful "no results" state with suggestions
 - [ ] Search works on mobile without layout issues
@@ -174,10 +175,12 @@ Acceptance criteria are listed under each story.
 ---
 
 **US-013 — Filter Recipes**
-> As a browser, I want to filter recipes by total time, cuisine, or difficulty, so that I can narrow down options to what fits my situation.
+> As a browser, I want to filter recipes by total time, cuisine, difficulty, equipment, and ingredients I have, so that I can narrow down options to what fits my situation and my kitchen.
 
 **Acceptance Criteria:**
 - [ ] Filter panel supports: total time (≤15 min, ≤30 min, ≤1 hr, any), cuisine (dropdown), difficulty (easy / medium / hard)
+- [ ] Filter panel supports: **equipment** (multi-select from canonical tag list — e.g., wok, oven, blender, air fryer, stand mixer)
+- [ ] Filter panel supports: **ingredients on hand** (see US-026 for full behaviour)
 - [ ] Multiple filters can be applied at once
 - [ ] Active filters are shown as dismissible chips
 - [ ] Filters persist during a session
@@ -188,8 +191,8 @@ Acceptance criteria are listed under each story.
 > As a browser, I want to open a recipe and see all steps clearly, so that I can follow along while cooking.
 
 **Acceptance Criteria:**
-- [ ] Recipe detail page shows: title, metadata, ingredient list, and all steps in order
-- [ ] Each step shows action, ingredients, duration, tool, and reminder
+- [ ] Recipe detail page shows: title, metadata, ingredient list, equipment list, and all steps in order
+- [ ] Each step shows action, ingredients, duration, equipment, and reminder
 - [ ] Steps can be checked off as completed (local state, no login required)
 - [ ] Page is readable on mobile without zooming
 
@@ -208,7 +211,7 @@ Acceptance criteria are listed under each story.
 
 **Acceptance Criteria:**
 - [ ] Import dialog accepts any URL
-- [ ] AI pipeline extracts: title, servings, ingredient list, step-by-step instructions, and timing
+- [ ] AI pipeline extracts: title, servings, ingredient list, step-by-step instructions, timing, and equipment per step
 - [ ] Extracted content is shown in a preview/review screen before saving
 - [ ] If extraction confidence is low on a step, it is flagged for user correction
 - [ ] User can edit any extracted field before saving
@@ -236,6 +239,40 @@ Acceptance criteria are listed under each story.
 - [ ] Imported recipes are treated as the user's own after saving (full edit access)
 - [ ] Source URL is shown as attribution metadata but is not publicly displayed by default
 - [ ] Revision history starts from the point of import
+
+---
+
+### Equipment & Ingredient Filtering
+
+---
+
+**US-025 — Filter by Equipment**
+> As a browser, I want to filter recipes by the kitchen equipment I own, so that I only see recipes I can actually make with what I have.
+
+**Acceptance Criteria:**
+- [ ] A canonical equipment tag list is maintained (e.g., wok, oven, microwave, blender, air fryer, stand mixer, pressure cooker, grill, food processor, cast iron pan)
+- [ ] Filter panel includes a multi-select equipment picker with searchable tags
+- [ ] Selecting one or more equipment tags shows only recipes that require **at most** those tools (i.e., no recipe requiring unlisted equipment appears)
+- [ ] Equipment tags are shown on each recipe card and detail page
+- [ ] Authors can add equipment tags when creating or editing a recipe (free-text + canonical tag matcher)
+- [ ] AI import pipeline auto-detects equipment per step and maps to canonical tags where possible
+- [ ] Active equipment filters appear as dismissible chips on the browse page
+- [ ] Removing all equipment filters restores the full recipe list
+
+---
+
+**US-026 — Filter by Ingredients on Hand**
+> As a browser, I want to enter the ingredients I currently have, so that StepDish shows me what I can cook right now without a shopping trip.
+
+**Acceptance Criteria:**
+- [ ] Filter panel includes an ingredient input field with autocomplete (matches ingredient names in the catalog)
+- [ ] User can add multiple ingredients as chips (e.g., "chicken", "garlic", "soy sauce")
+- [ ] System scores each visible recipe by ingredient match: **Full match** (all ingredients covered), **Partial match** (≥70% of ingredients covered, missing ones flagged), **No match** (hidden by default)
+- [ ] Browse gallery defaults to showing Full match first, then Partial match with a "missing X ingredients" label on the card
+- [ ] User can toggle "Show partial matches" on/off
+- [ ] Ingredient input is case-insensitive and handles common synonyms (e.g., "spring onion" = "scallion")
+- [ ] Entered ingredients persist for the session; a "Clear ingredients" button resets the filter
+- [ ] On the recipe detail page, ingredient list items are highlighted green (have it) or amber (missing) based on the user's entered list
 
 ---
 
@@ -338,4 +375,4 @@ Acceptance criteria are listed under each story.
 
 ---
 
-*User stories prepared May 2026. Stories will be refined and acceptance criteria validated during sprint planning.*
+*User stories prepared May 2026. v1.1 updated May 2026 to add US-025 (equipment filter), US-026 (ingredient filter), and expand US-003, US-004, US-013, US-014 for equipment support. Stories will be refined and acceptance criteria validated during sprint planning.*

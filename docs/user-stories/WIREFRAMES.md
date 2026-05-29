@@ -1,6 +1,7 @@
 # StepDish — ASCII Wireframes
 
-> **Version 1.0 | May 2026**
+> **Version 1.1 | May 2026**
+> Updated: WF-02 (step editor — added equipment field), WF-05 (filter panel — added equipment + ingredient filters), WF-06 (recipe detail — added equipment list)
 > All wireframes are mobile-first (375px). Desktop layouts noted where they differ significantly.
 
 ---
@@ -88,22 +89,29 @@
 │  ○ Draft (Private)              │
 │  ● Published (Public)           │
 │                                 │
+│  ─── Equipment Needed ────────  │
+│  (auto-compiled from steps)     │
+│  🔧 Frying pan  🔧 Knife        │
+│  🔧 Pot                         │
+│                                 │
 │  ─────────── Steps ───────────  │
 │                                 │
 │  ┌───────────────────────────┐  │
 │  │ Step 1            [ ✎ ]  │  │
 │  │ Chop 2 onions             │  │
-│  │ ⏱ 5 min  🔔 —            │  │
+│  │ ⏱ 5 min  🔧 Knife  🔔 — │  │
 │  └───────────────────────────┘  │
 │  ┌───────────────────────────┐  │
 │  │ Step 2            [ ✎ ]  │  │
 │  │ Sauté onions in olive oil │  │
-│  │ ⏱ 8 min  🔔 Stir at 4min │  │
+│  │ ⏱ 8 min  🔧 Frying pan   │  │
+│  │ 🔔 Stir at 4min           │  │
 │  └───────────────────────────┘  │
 │  ┌───────────────────────────┐  │
 │  │ Step 3            [ ✎ ]  │  │
 │  │ Add tomatoes & simmer     │  │
-│  │ ⏱ 20 min  🔔 Check sauce │  │
+│  │ ⏱ 20 min  🔧 Pot         │  │
+│  │ 🔔 Check sauce            │  │
 │  └───────────────────────────┘  │
 │                                 │
 │  ┌───────────────────────────┐  │
@@ -132,10 +140,18 @@
 │  ║  │  • 2 tbsp olive oil │  ║  │
 │  ║  └─────────────────────┘  ║  │
 │  ║                           ║  │
-│  ║  Duration   Tool          ║  │
-│  ║  ┌────────┐ ┌───────────┐ ║  │
-│  ║  │ 8 min  │ │ Frying pan│ ║  │
-│  ║  └────────┘ └───────────┘ ║  │
+│  ║  Duration                 ║  │
+│  ║  ┌─────────────────────┐  ║  │
+│  ║  │ 8 min               │  ║  │
+│  ║  └─────────────────────┘  ║  │
+│  ║                           ║  │
+│  ║  Equipment  🔧            ║  │
+│  ║  ┌─────────────────────┐  ║  │
+│  ║  │  Frying pan    [×]  │  ║  │
+│  ║  │  + Add equipment... │  ║  │
+│  ║  └─────────────────────┘  ║  │
+│  ║  Suggestions: wok · pot   ║  │
+│  ║  oven · cast iron pan     ║  │
 │  ║                           ║  │
 │  ║  Reminder                 ║  │
 │  ║  ┌─────────────────────┐  ║  │
@@ -174,7 +190,7 @@
 │  │  • 2 onions, sliced       │  │
 │  │  • 2 tbsp olive oil       │  │
 │  │                           │  │
-│  │  Tool: Frying pan         │  │
+│  │  🔧 Equipment: Frying pan │  │
 │  │                           │  │
 │  │  🔔 Stir at 4 min         │  │
 │  │                           │  │
@@ -272,7 +288,7 @@
 
 ---
 
-## WF-05 — Public Browse + Search + Filter (US-011, US-012, US-013)
+## WF-05 — Public Browse + Search + Filter (US-011, US-012, US-013, US-025, US-026)
 
 ### 5a. Browse Page
 
@@ -287,33 +303,32 @@
 │  [ All ] [ Quick ] [ Italian ]  │
 │  [ Asian ] [ Vegetarian ] [+]   │
 │                                 │
-│  Filters: ⏱ Any  🍽 All  ★ Any │
+│  Active filters:                │
+│  [⏱ ≤30min ×] [🔧 Wok ×]      │
+│  [🥦 chicken ×] [🥦 garlic ×]  │
 │  [ + Add Filter ]               │
 │                                 │
-│  ─────────── 128 recipes ─────  │
+│  ─────────── 34 recipes ──────  │
+│  (showing full + partial match) │
 │                                 │
 │  ┌───────────────────────────┐  │
 │  │ [      image       ]      │  │
-│  │ Tomato Pasta              │  │
-│  │ 🍝 Italian · ⏱ 35 min    │  │
-│  │ 5 steps  ·  ★ 4.8 (42)   │  │
-│  └───────────────────────────┘  │
-│  ┌───────────────────────────┐  │
-│  │ [      image       ]      │  │
-│  │ Garlic Butter Chicken     │  │
+│  │ ✅ Garlic Butter Chicken  │  │
 │  │ 🍗 Asian · ⏱ 25 min      │  │
-│  │ 4 steps  ·  ★ 4.6 (28)   │  │
+│  │ 🔧 Wok · 4 steps · ★4.6  │  │
 │  └───────────────────────────┘  │
 │  ┌───────────────────────────┐  │
 │  │ [      image       ]      │  │
-│  │ Simple Veggie Stir Fry    │  │
-│  │ 🥦 Veg · ⏱ 15 min        │  │
-│  │ 3 steps  ·  ★ 4.5 (19)   │  │
+│  │ 🟡 Chicken Stir Fry       │  │
+│  │ Missing: soy sauce        │  │
+│  │ 🔧 Wok · ⏱ 20 min · ★4.4 │  │
 │  └───────────────────────────┘  │
 │                                 │
 │       [ Load more recipes ]     │
 └─────────────────────────────────┘
 ```
+
+> Legend: ✅ Full ingredient match  🟡 Partial match (missing items shown)
 
 ### 5b. Filter Panel (slides in from right)
 
@@ -331,17 +346,39 @@
 │  ║                           ║  │
 │  ║  Cuisine                  ║  │
 │  ║  ┌─────────────────────┐  ║  │
-│  ║  │  Italian           ▾│  ║  │
+│  ║  │  Any cuisine       ▾│  ║  │
 │  ║  └─────────────────────┘  ║  │
 │  ║                           ║  │
 │  ║  Difficulty               ║  │
-│  ║  ○ Any                    ║  │
-│  ║  ● Easy                   ║  │
-│  ║  ○ Medium                 ║  │
-│  ║  ○ Hard                   ║  │
+│  ║  ○ Any  ● Easy            ║  │
+│  ║  ○ Medium  ○ Hard         ║  │
 │  ║                           ║  │
 │  ║  Min. Rating              ║  │
 │  ║  ★ ★ ★ ★ ☆  (4+)         ║  │
+│  ║                           ║  │
+│  ║  ─── 🔧 Equipment ──────  ║  │
+│  ║  I have these tools:      ║  │
+│  ║  ┌─────────────────────┐  ║  │
+│  ║  │ Search equipment... │  ║  │
+│  ║  └─────────────────────┘  ║  │
+│  ║  [Wok ×] [Oven ×]        ║  │
+│  ║  [Knife ×]               ║  │
+│  ║                           ║  │
+│  ║  Common: [ Blender ]      ║  │
+│  ║  [ Air Fryer ] [ Grill ]  ║  │
+│  ║  [ Stand Mixer ] [ Pot ]  ║  │
+│  ║  [ Cast Iron ] [ Wok ]    ║  │
+│  ║                           ║  │
+│  ║  ─── 🥦 Ingredients ────  ║  │
+│  ║  I have these ingredients:║  │
+│  ║  ┌─────────────────────┐  ║  │
+│  ║  │ Type an ingredient..│  ║  │
+│  ║  └─────────────────────┘  ║  │
+│  ║  [chicken ×] [garlic ×]  ║  │
+│  ║  [soy sauce ×]            ║  │
+│  ║                           ║  │
+│  ║  Show partial matches     ║  │
+│  ║  ● On  ○ Off              ║  │
 │  ║                           ║  │
 │  ║  ┌─────────────────────┐  ║  │
 │  ║  │  [ Apply Filters ]  │  ║  │
@@ -370,31 +407,40 @@
 │  │ 🔖 Save  │  │  ↗ Remix    │  │
 │  └──────────┘  └─────────────┘  │
 │                                 │
+│  ─────── Equipment Needed ────  │
+│  🔧 Knife & board               │
+│  🔧 Frying pan                  │
+│  🔧 Pot                         │
+│                                 │
 │  ─────── Ingredients ─────────  │
-│  • 200g spaghetti               │
-│  • 3 ripe tomatoes, diced       │
-│  • 2 cloves garlic, minced      │
-│  • 2 tbsp olive oil             │
-│  • Salt, pepper, basil          │
+│  ✅ 200g spaghetti              │
+│  ✅ 3 ripe tomatoes, diced      │
+│  🟡 2 cloves garlic, minced     │
+│  ✅ 2 tbsp olive oil            │
+│  ✅ Salt, pepper, basil         │
+│                                 │
+│  ✅ = you have it  🟡 = missing │
 │                                 │
 │  ─────────── Steps ───────────  │
 │                                 │
 │  ☐  Step 1                      │
 │  ┌───────────────────────────┐  │
 │  │ 🔪 Chop tomatoes & garlic │  │
-│  │ ⏱ 5 min   🛠 Knife, board│  │
+│  │ ⏱ 5 min   🔧 Knife, board│  │
 │  └───────────────────────────┘  │
 │                                 │
 │  ☐  Step 2                      │
 │  ┌───────────────────────────┐  │
 │  │ 🍳 Sauté garlic in oil    │  │
 │  │ ⏱ 3 min   🔔 Don't burn  │  │
+│  │ 🔧 Frying pan             │  │
 │  └───────────────────────────┘  │
 │                                 │
 │  ☐  Step 3                      │
 │  ┌───────────────────────────┐  │
 │  │ 🫕 Add tomatoes, simmer   │  │
 │  │ ⏱ 15 min  🔔 Stir often  │  │
+│  │ 🔧 Pot                    │  │
 │  └───────────────────────────┘  │
 │                                 │
 │  ┌───────────────────────────┐  │
@@ -472,6 +518,7 @@
 │   ✓ Detecting ingredients       │
 │   ⟳ Extracting steps...         │
 │   ○ Classifying actions         │
+│   ○ Detecting equipment         │
 │   ○ Estimating durations        │
 │                                 │
 │                                 │
@@ -501,27 +548,22 @@
 │  ✅  Step 1  (High confidence)  │
 │  ┌───────────────────────────┐  │
 │  │ Chop tomatoes & garlic    │  │
-│  │ ⏱ 5 min                  │  │
+│  │ ⏱ 5 min  🔧 Knife, board  │  │
 │  └───────────────────────────┘  │
 │                                 │
 │  ⚠   Step 2  (Low confidence)  │
 │  ┌───────────────────────────┐  │
 │  │ [Cook the base mixture]   │  │
-│  │ ⏱ ? min  ← needs review  │  │
+│  │ ⏱ ? min  🔧 ?             │  │
+│  │ ← duration & equipment    │  │
+│  │    need review            │  │
 │  │ [ Edit Step ]             │  │
 │  └───────────────────────────┘  │
 │                                 │
 │  ✅  Step 3  (High confidence)  │
 │  ┌───────────────────────────┐  │
 │  │ Simmer sauce for 15 min   │  │
-│  │ ⏱ 15 min                 │  │
-│  └───────────────────────────┘  │
-│                                 │
-│  ⚠   Step 4  (Low confidence)  │
-│  ┌───────────────────────────┐  │
-│  │ [Finish and plate]        │  │
-│  │ ⏱ ? min  ← needs review  │  │
-│  │ [ Edit Step ]             │  │
+│  │ ⏱ 15 min  🔧 Pot          │  │
 │  └───────────────────────────┘  │
 │                                 │
 │  ┌───────────────────────────┐  │
@@ -623,6 +665,11 @@
 flowchart TD
     A([Home / Browse]) --> B[Recipe Detail]
     A --> C([Log In / Sign Up])
+    A --> FP([Filter Panel])
+    FP --> EQ[Equipment Filter]
+    FP --> ING[Ingredient Filter]
+    EQ --> A
+    ING --> A
     C --> D([My Dashboard])
     D --> E([Recipe Editor — New])
     D --> F([Recipe Editor — Edit])
@@ -658,20 +705,21 @@ sequenceDiagram
     AI->>AI: Fetch & clean HTML (if URL)
     AI->>AI: Detect title, servings, ingredients
     AI->>AI: Segment instructions into steps
-    AI->>AI: Classify action, duration, tool per step
+    AI->>AI: Classify action, duration, equipment per step
+    AI->>AI: Map equipment to canonical tag list
     AI->>AI: Score confidence per step
-    AI-->>App: Return structured steps + confidence scores
+    AI-->>App: Return structured steps + equipment tags + confidence scores
     App->>User: Show AI Review Queue
     alt All steps high confidence
         User->>App: Confirm & Save
     else Some steps flagged
-        User->>App: Edit flagged steps
+        User->>App: Edit flagged steps (incl. equipment)
         User->>App: Confirm & Save
     end
-    App->>DB: Save recipe to user collection
+    App->>DB: Save recipe + equipment tags to user collection
     App-->>User: Redirect to Recipe Editor
 ```
 
 ---
 
-*Wireframes prepared May 2026. Layouts are indicative — final spacing and visual design defined in the design system.*
+*Wireframes prepared May 2026. v1.1 updated May 2026 — added equipment field to WF-02, WF-03, WF-06, WF-07; added equipment + ingredient filter sections to WF-05; updated WF-09 navigation. Layouts are indicative — final spacing and visual design defined in the design system.*
