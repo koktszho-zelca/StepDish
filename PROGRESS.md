@@ -30,7 +30,7 @@
 
 | ID | Task | Spec | Status | Notes |
 |---|---|---|---|---|
-| T-001 | Initialise Next.js project (TypeScript, ESLint, Prettier) | [T-01](./docs/builders/T-01-project-setup.md) | `[ ]` | Start here |
+| T-001 | Initialise Next.js project (TypeScript, ESLint, Prettier) | [T-01](./docs/builders/T-01-project-setup.md) | `[x]` | Complete — merged 2026-05-29 |
 | T-002 | Configure CockroachDB Serverless + Prisma ORM | [T-03 schema](./docs/builders/T-03-database-schema.md) | `[ ]` | Requires T-001 |
 | T-003 | Define & run database schema migrations | [T-03 schema](./docs/builders/T-03-database-schema.md) | `[ ]` | Requires T-002 |
 | T-004 | Integrate Clerk authentication | [T-02 auth](./docs/builders/T-02-auth.md) | `[ ]` | Requires T-003 |
@@ -132,10 +132,10 @@ Before changing any task from `[ ]` to `[x]`, confirm all of the following:
 
 | Phase | Total | Done | Remaining |
 |---|---|---|---|
-| Phase 1 — Core MVP | 22 | 0 | 22 |
+| Phase 1 — Core MVP | 22 | 1 | 21 |
 | Phase 2 — Import & AI | 9 | 0 | 9 |
 | Phase 3 — Discovery & Scale | 9 | 0 | 9 |
-| **Total** | **40** | **0** | **40** |
+| **Total** | **40** | **1** | **39** |
 
 ---
 
@@ -150,4 +150,4 @@ Before changing any task from `[ ]` to `[x]`, confirm all of the following:
 
 ---
 
-*Board initialised 2026-05-29. Maintained by AI agents — update on every task completion.*
+*Board last updated: 2026-05-29 — T-001 marked complete.*
