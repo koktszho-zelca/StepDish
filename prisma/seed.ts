@@ -1,11 +1,11 @@
-import { PrismaClient, Difficulty, Visibility } from '@prisma/client';
+import { PrismaClient, Difficulty, Visibility } from '@prisma/client'
 
-const prisma = new PrismaClient();
+const prisma = new PrismaClient()
 
 async function main() {
-  console.log('🌱 Seeding database...');
+  console.log('🌱 Seeding database...')
 
-  // ---------- Equipment Tags ----------
+  // ── Equipment Tags ──────────────────────────────────────────────────────────
   const equipmentNames = [
     'Wok',
     'Frying Pan',
@@ -20,71 +20,61 @@ async function main() {
     'Pressure Cooker',
     'Food Processor',
     'Microwave',
-  ];
+  ]
 
-  const equipment: Record<string, { id: string; name: string }> = {};
+  const equipment: Record<string, string> = {}
   for (const name of equipmentNames) {
     const tag = await prisma.equipmentTag.upsert({
       where: { name },
       update: {},
       create: { name },
-    });
-    equipment[name] = tag;
+    })
+    equipment[name] = tag.id
   }
-  console.log(`✅ Seeded ${equipmentNames.length} equipment tags`);
+  console.log(`  ✓ ${equipmentNames.length} equipment tags`)
 
-  // ---------- Ingredients ----------
-  const ingredientNames = [
-    'Garlic',
-    'Onion',
-    'Olive Oil',
-    'Soy Sauce',
-    'Chicken',
-    'Spaghetti',
-    'Tomato',
-    'Egg',
-    'Salt',
-    'Pepper',
-    'Butter',
-    'Flour',
-    'Sugar',
-  ];
+  // ── Ingredients ─────────────────────────────────────────────────────────────
+  const ingredientDefs: { name: string; aliases?: string[] }[] = [
+    { name: 'Garlic', aliases: ['garlic cloves', 'minced garlic'] },
+    { name: 'Onion', aliases: ['white onion', 'yellow onion'] },
+    { name: 'Olive Oil', aliases: ['extra virgin olive oil', 'EVOO'] },
+    { name: 'Soy Sauce', aliases: ['light soy sauce', 'shoyu'] },
+    { name: 'Chicken', aliases: ['chicken breast', 'chicken thigh', 'boneless chicken'] },
+    { name: 'Spaghetti', aliases: ['pasta', 'spaghettini'] },
+    { name: 'Tomato', aliases: ['cherry tomatoes', 'roma tomato', 'canned tomatoes'] },
+    { name: 'Egg', aliases: ['eggs', 'large egg'] },
+    { name: 'Salt' },
+    { name: 'Pepper', aliases: ['black pepper', 'white pepper', 'ground pepper'] },
+    { name: 'Butter', aliases: ['unsalted butter', 'salted butter'] },
+    { name: 'Flour', aliases: ['all-purpose flour', 'plain flour'] },
+    { name: 'Sugar', aliases: ['white sugar', 'granulated sugar'] },
+  ]
 
-  const ingredients: Record<string, { id: string; name: string }> = {};
-  for (const name of ingredientNames) {
+  const ingredients: Record<string, string> = {}
+  for (const { name, aliases = [] } of ingredientDefs) {
     const ing = await prisma.ingredient.upsert({
       where: { name },
       update: {},
-      create: { name },
-    });
-    ingredients[name] = ing;
+      create: { name, aliases },
+    })
+    ingredients[name] = ing.id
   }
-  console.log(`✅ Seeded ${ingredientNames.length} ingredients`);
+  console.log(`  ✓ ${ingredientDefs.length} ingredients`)
 
-  // ---------- Seed User ----------
+  // ── Seed User (required for recipe authorship) ───────────────────────────────
   const seedUser = await prisma.user.upsert({
-    where: { email: 'seed@stepdish.app' },
+    where: { clerkId: 'seed_user_001' },
     update: {},
     create: {
-      clerkId: 'seed_clerk_id',
+      clerkId: 'seed_user_001',
       email: 'seed@stepdish.app',
-      displayName: 'Seed Chef',
+      displayName: 'StepDish Kitchen',
     },
-  });
-  console.log(`✅ Seed user ready: ${seedUser.email}`);
+  })
+  console.log(`  ✓ Seed user: ${seedUser.displayName}`)
 
-  // ---------- Recipe 1: Tomato Pasta ----------
-  const pastaSpaghetti = ingredients['Spaghetti']!;
-  const pastaGarlic = ingredients['Garlic']!;
-  const pastaTomato = ingredients['Tomato']!;
-  const pastaOliveOil = ingredients['Olive Oil']!;
-  const pastaSalt = ingredients['Salt']!;
-  const pastaPepper = ingredients['Pepper']!;
-  const pastaPot = equipment['Pot']!;
-  const pastaFryingPan = equipment['Frying Pan']!;
-  const pastaKnife = equipment['Knife & Board']!;
-
-  const tomatoPasta = await prisma.recipe.upsert({
+  // ── Recipe 1: Tomato Pasta ───────────────────────────────────────────────────
+  const pasta = await prisma.recipe.upsert({
     where: { id: 'seed-recipe-tomato-pasta' },
     update: {},
     create: {
@@ -98,19 +88,19 @@ async function main() {
       visibility: Visibility.PUBLISHED,
       ingredients: {
         create: [
-          { ingredientId: pastaSpaghetti.id, quantity: '200', unit: 'g' },
-          { ingredientId: pastaTomato.id, quantity: '3', unit: 'whole' },
-          { ingredientId: pastaGarlic.id, quantity: '3', unit: 'cloves' },
-          { ingredientId: pastaOliveOil.id, quantity: '2', unit: 'tbsp' },
-          { ingredientId: pastaSalt.id },
-          { ingredientId: pastaPepper.id },
+          { ingredientId: ingredients['Spaghetti'], quantity: '200', unit: 'g' },
+          { ingredientId: ingredients['Tomato'], quantity: '400', unit: 'g', notes: 'canned crushed' },
+          { ingredientId: ingredients['Garlic'], quantity: '3', unit: 'cloves' },
+          { ingredientId: ingredients['Olive Oil'], quantity: '2', unit: 'tbsp' },
+          { ingredientId: ingredients['Salt'], quantity: 'to taste' },
+          { ingredientId: ingredients['Pepper'], quantity: 'to taste' },
         ],
       },
       equipment: {
         create: [
-          { equipmentId: pastaPot.id },
-          { equipmentId: pastaFryingPan.id },
-          { equipmentId: pastaKnife.id },
+          { equipmentId: equipment['Pot'] },
+          { equipmentId: equipment['Frying Pan'] },
+          { equipmentId: equipment['Knife & Board'] },
         ],
       },
       steps: {
@@ -118,46 +108,39 @@ async function main() {
           {
             position: 1,
             action: 'Bring a large pot of salted water to a boil.',
-            durationMin: 8,
+            durationMin: 10,
+            reminder: 'Water should be well-salted — it should taste like the sea.',
           },
           {
             position: 2,
-            action: 'Dice the tomatoes and mince the garlic.',
+            action: 'Finely slice the garlic. Heat olive oil in a frying pan over medium-low heat, add garlic and cook until golden and fragrant.',
             durationMin: 5,
+            reminder: 'Do not burn the garlic — keep heat low.',
           },
           {
             position: 3,
-            action: 'Cook spaghetti according to package instructions until al dente, then drain.',
-            durationMin: 10,
+            action: 'Add crushed tomatoes to the pan. Season with salt and pepper. Simmer on low.',
+            durationMin: 15,
           },
           {
             position: 4,
-            action: 'Heat olive oil in a frying pan over medium heat. Sauté garlic for 1 minute, then add tomatoes and simmer for 10 minutes.',
-            durationMin: 12,
-            reminder: 'Stir occasionally to prevent sticking',
+            action: 'Cook the spaghetti according to packet instructions until al dente. Reserve 1 cup of pasta water before draining.',
+            durationMin: 10,
+            reminder: 'Save the pasta water — it helps bind the sauce.',
           },
           {
             position: 5,
-            action: 'Toss drained pasta with the tomato sauce. Season with salt and pepper.',
+            action: 'Toss drained spaghetti into the tomato sauce. Add a splash of pasta water and toss vigorously over heat for 1–2 minutes.',
             durationMin: 2,
           },
         ],
       },
     },
-  });
-  console.log(`✅ Seeded recipe: ${tomatoPasta.title}`);
+  })
+  console.log(`  ✓ Recipe: ${pasta.title}`)
 
-  // ---------- Recipe 2: Garlic Butter Chicken ----------
-  const chickenIng = ingredients['Chicken']!;
-  const garlicIng = ingredients['Garlic']!;
-  const butterIng = ingredients['Butter']!;
-  const soySauceIng = ingredients['Soy Sauce']!;
-  const saltIng = ingredients['Salt']!;
-  const pepperIng = ingredients['Pepper']!;
-  const castIronPan = equipment['Cast Iron Pan']!;
-  const knifeBoard = equipment['Knife & Board']!;
-
-  const garlicButterChicken = await prisma.recipe.upsert({
+  // ── Recipe 2: Garlic Butter Chicken ─────────────────────────────────────────
+  const chicken = await prisma.recipe.upsert({
     where: { id: 'seed-recipe-garlic-butter-chicken' },
     update: {},
     create: {
@@ -171,65 +154,57 @@ async function main() {
       visibility: Visibility.PUBLISHED,
       ingredients: {
         create: [
-          { ingredientId: chickenIng.id, quantity: '400', unit: 'g' },
-          { ingredientId: garlicIng.id, quantity: '4', unit: 'cloves' },
-          { ingredientId: butterIng.id, quantity: '2', unit: 'tbsp' },
-          { ingredientId: soySauceIng.id, quantity: '2', unit: 'tbsp' },
-          { ingredientId: saltIng.id },
-          { ingredientId: pepperIng.id },
+          { ingredientId: ingredients['Chicken'], quantity: '400', unit: 'g', notes: 'boneless thighs' },
+          { ingredientId: ingredients['Butter'], quantity: '2', unit: 'tbsp' },
+          { ingredientId: ingredients['Garlic'], quantity: '4', unit: 'cloves', notes: 'minced' },
+          { ingredientId: ingredients['Soy Sauce'], quantity: '2', unit: 'tbsp' },
+          { ingredientId: ingredients['Salt'], quantity: 'to taste' },
+          { ingredientId: ingredients['Pepper'], quantity: 'to taste' },
         ],
       },
       equipment: {
         create: [
-          { equipmentId: castIronPan.id },
-          { equipmentId: knifeBoard.id },
+          { equipmentId: equipment['Cast Iron Pan'] },
+          { equipmentId: equipment['Knife & Board'] },
         ],
       },
       steps: {
         create: [
           {
             position: 1,
-            action: 'Cut chicken into bite-sized pieces and season with salt and pepper.',
-            durationMin: 5,
-          },
-          {
-            position: 2,
-            action: 'Mince the garlic cloves finely.',
-            durationMin: 2,
-          },
-          {
-            position: 3,
-            action: 'Heat cast iron pan over high heat. Add butter and sear chicken pieces until golden, about 5 minutes per side.',
-            durationMin: 10,
-            reminder: 'Do not overcrowd the pan',
-          },
-          {
-            position: 4,
-            action: 'Add minced garlic and soy sauce. Toss to coat and cook for 3 more minutes until sauce thickens.',
+            action: 'Pat chicken thighs dry with paper towels. Season generously with salt and pepper on both sides.',
             durationMin: 3,
           },
           {
+            position: 2,
+            action: 'Heat cast iron pan over high heat until smoking. Add 1 tbsp butter. Sear chicken skin-side down without moving for 5 minutes until golden-brown crust forms.',
+            durationMin: 5,
+            reminder: 'Resist the urge to move the chicken — it will release when ready.',
+          },
+          {
+            position: 3,
+            action: 'Flip chicken. Reduce heat to medium. Cook for another 5 minutes until cooked through (internal temp 74°C / 165°F).',
+            durationMin: 5,
+            reminder: 'Use a meat thermometer to verify doneness.',
+          },
+          {
+            position: 4,
+            action: 'Remove chicken and rest on a plate. In the same pan, add remaining butter and minced garlic. Cook 1 minute until fragrant.',
+            durationMin: 1,
+          },
+          {
             position: 5,
-            action: 'Rest for 2 minutes before serving.',
-            durationMin: 2,
+            action: 'Add soy sauce to the pan, stir, and spoon garlic butter sauce over the rested chicken. Serve immediately.',
+            durationMin: 1,
           },
         ],
       },
     },
-  });
-  console.log(`✅ Seeded recipe: ${garlicButterChicken.title}`);
+  })
+  console.log(`  ✓ Recipe: ${chicken.title}`)
 
-  // ---------- Recipe 3: Simple Veggie Stir Fry ----------
-  const wok = equipment['Wok']!;
-  const knifeBoard2 = equipment['Knife & Board']!;
-  const oliveOilIng = ingredients['Olive Oil']!;
-  const onionIng = ingredients['Onion']!;
-  const garlicIng2 = ingredients['Garlic']!;
-  const soySauceIng2 = ingredients['Soy Sauce']!;
-  const saltIng2 = ingredients['Salt']!;
-  const pepperIng2 = ingredients['Pepper']!;
-
-  const veggieStirFry = await prisma.recipe.upsert({
+  // ── Recipe 3: Simple Veggie Stir Fry ────────────────────────────────────────
+  const stirfry = await prisma.recipe.upsert({
     where: { id: 'seed-recipe-veggie-stir-fry' },
     update: {},
     create: {
@@ -243,57 +218,64 @@ async function main() {
       visibility: Visibility.PUBLISHED,
       ingredients: {
         create: [
-          { ingredientId: onionIng.id, quantity: '1', unit: 'whole' },
-          { ingredientId: garlicIng2.id, quantity: '2', unit: 'cloves' },
-          { ingredientId: oliveOilIng.id, quantity: '1', unit: 'tbsp' },
-          { ingredientId: soySauceIng2.id, quantity: '1', unit: 'tbsp' },
-          { ingredientId: saltIng2.id },
-          { ingredientId: pepperIng2.id },
+          { ingredientId: ingredients['Garlic'], quantity: '2', unit: 'cloves', notes: 'sliced' },
+          { ingredientId: ingredients['Onion'], quantity: '1', unit: 'medium', notes: 'cut into wedges' },
+          { ingredientId: ingredients['Soy Sauce'], quantity: '2', unit: 'tbsp' },
+          { ingredientId: ingredients['Olive Oil'], quantity: '1', unit: 'tbsp' },
+          { ingredientId: ingredients['Salt'], quantity: 'to taste' },
+          { ingredientId: ingredients['Pepper'], quantity: 'to taste' },
         ],
       },
       equipment: {
         create: [
-          { equipmentId: wok.id },
-          { equipmentId: knifeBoard2.id },
+          { equipmentId: equipment['Wok'] },
+          { equipmentId: equipment['Knife & Board'] },
         ],
       },
       steps: {
         create: [
           {
             position: 1,
-            action: 'Slice onion into thin strips and mince garlic.',
-            durationMin: 3,
+            action: 'Prep all vegetables: slice garlic, cut onion into wedges, chop any other vegetables into bite-sized pieces.',
+            durationMin: 5,
+            notes: 'Have everything ready before turning on the heat — stir fry moves fast.',
           },
           {
             position: 2,
-            action: 'Heat wok over high heat until smoking. Add oil.',
-            durationMin: 2,
-            reminder: 'Wok must be very hot before adding oil',
+            action: 'Heat wok over the highest heat until smoking. Add oil and swirl to coat.',
+            durationMin: 1,
+            reminder: 'A screaming-hot wok is the secret to wok hei (that smoky flavour).',
           },
           {
             position: 3,
-            action: 'Add garlic and stir-fry for 30 seconds, then add onion and toss continuously for 3 minutes.',
-            durationMin: 4,
+            action: 'Add garlic and onion. Stir fry tossing constantly for 2 minutes.',
+            durationMin: 2,
           },
           {
             position: 4,
-            action: 'Drizzle soy sauce over vegetables, toss well and season with salt and pepper. Serve immediately.',
+            action: 'Add remaining vegetables. Stir fry for another 3–4 minutes until tender-crisp.',
+            durationMin: 4,
+          },
+          {
+            position: 5,
+            action: 'Add soy sauce and toss everything together for 30 seconds. Season with salt and pepper. Serve immediately.',
             durationMin: 1,
+            reminder: 'Serve straight from the wok for the best texture.',
           },
         ],
       },
     },
-  });
-  console.log(`✅ Seeded recipe: ${veggieStirFry.title}`);
+  })
+  console.log(`  ✓ Recipe: ${stirfry.title}`)
 
-  console.log('🎉 Seeding complete!');
+  console.log('\n✅ Seed complete!')
 }
 
 main()
   .catch((e) => {
-    console.error('❌ Seed failed:', e);
-    process.exit(1);
+    console.error('❌ Seed failed:', e)
+    process.exit(1)
   })
   .finally(async () => {
-    await prisma.$disconnect();
-  });
+    await prisma.$disconnect()
+  })
