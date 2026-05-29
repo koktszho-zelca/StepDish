@@ -15,7 +15,7 @@
 | **5** | Open the task-specific spec doc | `docs/builders/T-XX-*.md` |
 | **6** | Mark done when finished | Update `[ ]` → `[x]` in [`PROGRESS.md`](./PROGRESS.md) |
 
-> **Golden rule:** If a doc exists for your task, follow it. Do not invent conventions.
+> **Golden rule:** All source code must live under `/src`. Do not create code files outside `/src`. If a doc exists for your task, follow it. Do not invent conventions.
 
 ---
 
@@ -25,6 +25,14 @@
 /
 ├── PROGRESS.md                      ← 🔴 LIVE task board — check every session
 ├── README.md                        ← You are here. Navigation index.
+├── src/                             ← 🚨 ALL source code lives here — no exceptions
+│   ├── app/                         ← Next.js App Router (pages, layouts, API routes)
+│   ├── components/                  ← Shared UI components
+│   ├── lib/                         ← Services, helpers, Prisma client, AI, auth
+│   ├── styles/                      ← Design tokens and global CSS
+│   └── types/                       ← Shared TypeScript type definitions
+├── prisma/                          ← schema.prisma + migrations (non-src exception)
+├── tests/                           ← Unit, integration, and E2E test files
 └── docs/
     ├── PROPOSAL.md                  ← Product vision, goals, source strategy
     ├── builders/                    ← Build instructions for AI agents
@@ -139,13 +147,14 @@
 ## ⚡ Quick Rules for AI Agents
 
 1. **Check `PROGRESS.md` first** — find your next task before reading anything else.
-2. **Always read the task spec before coding** — `docs/builders/T-XX-*.md` for the relevant task.
-3. **Never skip the Definition of Done** — every task must pass `APPENDIX-definition-of-done.md`.
-4. **Follow API conventions exactly** — endpoints, error shapes, and status codes in `APPENDIX-api-conventions.md`.
-5. **Do not store secrets in code** — all credentials go in environment variables per `docs/infra/INFRA.md`.
-6. **One task per PR** — keep changes scoped; reference the task ID in the PR title e.g. `[T-004] Clerk auth`.
-7. **Tests are mandatory** — unit + integration tests per `APPENDIX-testing-standards.md` before marking done.
-8. **Mark done in `PROGRESS.md`** — change `[ ]` → `[x]` and commit with `progress(T-XXX): mark complete`.
+2. **All source code must go under `/src`** — no exceptions. Never create `.ts`, `.tsx`, or `.css` files outside `/src`. The only allowed top-level non-src folders are `prisma/`, `tests/`, `docs/`, and config files.
+3. **Always read the task spec before coding** — `docs/builders/T-XX-*.md` for the relevant task.
+4. **Never skip the Definition of Done** — every task must pass `APPENDIX-definition-of-done.md`.
+5. **Follow API conventions exactly** — endpoints, error shapes, and status codes in `APPENDIX-api-conventions.md`.
+6. **Do not store secrets in code** — all credentials go in environment variables per `docs/infra/INFRA.md`.
+7. **One task per PR** — keep changes scoped; reference the task ID in the PR title e.g. `[T-004] Clerk auth`.
+8. **Tests are mandatory** — unit + integration tests per `APPENDIX-testing-standards.md` before marking done.
+9. **Mark done in `PROGRESS.md`** — change `[ ]` → `[x]` and commit with `progress(T-XXX): mark complete`.
 
 ---
 

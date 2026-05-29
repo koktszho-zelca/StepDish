@@ -6,8 +6,9 @@
 > 1. Read this file at the start of every session.
 > 2. Find the **first unchecked task** `[ ]` in the lowest-numbered phase.
 > 3. Read its linked spec doc before writing any code.
-> 4. When done, **edit this file** and change `[ ]` → `[x]` for that task.
-> 5. Commit the update with message: `progress(T-XXX): mark complete`.
+> 4. **All source code must live under `/src`.** Never create code files outside `/src`.
+> 5. When done, **edit this file** and change `[ ]` → `[x]` for that task.
+> 6. Commit the update with message: `progress(T-XXX): mark complete`.
 >
 > ⚠️ Never skip a task. Never mark done without passing all test cases in [`docs/builders/TASK_SPEC.md`](./docs/builders/TASK_SPEC.md).
 
@@ -116,6 +117,7 @@ Before changing any task from `[ ]` to `[x]`, confirm all of the following:
 
 - [ ] All test cases in [`docs/builders/TASK_SPEC.md`](./docs/builders/TASK_SPEC.md) pass for this task ID
 - [ ] Definition of Done in [`docs/builders/APPENDIX-definition-of-done.md`](./docs/builders/APPENDIX-definition-of-done.md) is met
+- [ ] **All new code files are inside `/src`** — no source code created outside `/src`
 - [ ] TypeScript strict mode — no unresolved errors
 - [ ] API conventions followed per [`docs/builders/APPENDIX-api-conventions.md`](./docs/builders/APPENDIX-api-conventions.md)
 - [ ] No secrets committed (all in `.env.local`)

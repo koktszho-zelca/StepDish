@@ -1,6 +1,6 @@
 # StepDish — AI Builder's Guide
 
-> **Version 1.1 | May 2026**
+> **Version 1.2 | May 2026**
 > This document is the single source of truth for any AI agent or developer building StepDish.
 > Follow tasks in order unless a task is explicitly marked as parallelisable.
 
@@ -46,6 +46,31 @@
 
 ## Conventions
 
+### 🚨 Source Code Location (Mandatory)
+
+> **All application source code must be placed inside the `/src` folder.**
+
+This is a hard rule with no exceptions for code files:
+
+```
+/src                         ← ALL code goes here
+  /src/app/                  ← Next.js App Router (pages, layouts, API routes)
+  /src/components/           ← UI components
+  /src/lib/                  ← Services, helpers, AI, auth, Prisma client
+  /src/styles/               ← Design tokens and global CSS
+  /src/types/                ← Shared TypeScript types
+```
+
+The only files **allowed outside `/src`** are:
+- `prisma/` — schema and migrations (Prisma CLI requirement)
+- `tests/` — test files (Vitest / Playwright convention)
+- `docs/` — documentation only
+- Root config files: `next.config.ts`, `tsconfig.json`, `package.json`, `.env.local`, `tailwind.config.ts`, `vitest.config.ts`, `playwright.config.ts`
+
+**Never create `.ts`, `.tsx`, `.js`, or `.css` source files at the repo root or in any folder other than `/src` (and the explicit exceptions above).**
+
+---
+
 ### Commit format
 
 Include the task number in every feat/fix/test/refactor commit so changes are traceable to specs.
@@ -81,6 +106,7 @@ Quick reference — a task is **not** done until:
 - All test cases pass (`pnpm test`)
 - No TypeScript errors (`pnpm typecheck`)
 - No ESLint errors (`pnpm lint`)
+- **All new code files are inside `/src`**
 - Mobile layout verified at 375px, desktop at 1280px
 - PR opened against `main` with task number in title and passing CI
 
@@ -91,15 +117,15 @@ Quick reference — a task is **not** done until:
 | Layer | Choice | Notes |
 |---|---|---|
 | Frontend | Next.js 14+ (App Router) | SSR for browse/SEO, client for editor |
-| Styling | Tailwind CSS v4 | Use design tokens from `styles/tokens.css` |
+| Styling | Tailwind CSS v4 | Use design tokens from `src/styles/tokens.css` |
 | Backend | Next.js API Routes | Keep API routes thin — logic in service layer |
-| Database | PostgreSQL | Use Prisma ORM |
+| Database | CockroachDB Serverless (Phase 1) → Supabase (Phase 3) | Prisma ORM, `provider = "cockroachdb"` |
 | Auth | Clerk | Social login + JWT sessions |
-| AI | OpenAI GPT-4o API | Via server-side API routes only — never expose key to client |
+| AI | OpenAI GPT-4o API | Via server-side API routes in `src/app/api/` only |
 | Search | PostgreSQL full-text (Phase 1) | Upgrade to Typesense in Phase 3 |
 | Storage | Cloudflare R2 | Recipe images only |
 | Testing | Vitest (unit/integration), React Testing Library (components), Playwright (E2E) | See [Appendix A — Testing Standards](./APPENDIX-testing-standards.md) |
-| Hosting | Vercel (frontend) + Railway (API/DB) | |
+| Hosting | Vercel (Singapore `sin1` region) | |
 
 ---
 
@@ -107,47 +133,53 @@ Quick reference — a task is **not** done until:
 
 ```
 stepdish/
-├── app/                        # Next.js App Router
-│   ├── (auth)/                 # Auth pages (login, signup)
-│   ├── (public)/               # Public browse, recipe detail
-│   ├── (dashboard)/            # Authenticated user pages
-│   └── api/                    # API routes
-│       ├── recipes/
-│       ├── steps/
-│       ├── import/
-│       └── ai/
-├── components/
-│   ├── ui/                     # Base UI components (Button, Input, Card)
-│   ├── recipe/                 # Recipe-specific components
-│   ├── step/                   # Step editor, step card
-│   ├── browse/                 # Browse page, filter panel
-│   └── cook/                   # Cook mode components
-├── lib/
-│   ├── db/                     # Prisma client + query helpers
-│   ├── ai/                     # AI extraction service
-│   ├── auth/                   # Auth helpers
-│   ├── schemas/                # Zod validation schemas
-│   └── utils/                  # Shared utilities
-├── prisma/
-│   ├── schema.prisma           # Database schema
-│   └── seed.ts                 # Seed data
-├── styles/
-│   └── tokens.css              # Design tokens (colours, spacing, type)
-├── docs/
-│   └── builders/               # This guide
-│       ├── README.md           # ← You are here
-│       ├── OVERVIEW.md         # Architecture & full phase plan
-│       ├── TASK_SPEC.md        # Detailed per-task specifications
-│       ├── T-01 … T-20         # Individual task files
-│       ├── APPENDIX-testing-standards.md
-│       ├── APPENDIX-api-conventions.md
-│       ├── APPENDIX-error-handling.md
-│       └── APPENDIX-definition-of-done.md
-└── tests/
-    ├── unit/
-    ├── integration/
-    └── e2e/
+├── src/                            ← 🚨 ALL source code lives here
+│   ├── app/                        ← Next.js App Router
+│   │   ├── (auth)/             ← Auth pages (login, signup)
+│   │   ├── (public)/           ← Public browse, recipe detail
+│   │   ├── (dashboard)/        ← Authenticated user pages
+│   │   └── api/                ← API routes
+│   │       ├── recipes/
+│   │       ├── steps/
+│   │       ├── import/
+│   │       └── ai/
+│   ├── components/
+│   │   ├── ui/                 ← Base UI components (Button, Input, Card)
+│   │   ├── recipe/             ← Recipe-specific components
+│   │   ├── step/               ← Step editor, step card
+│   │   ├── browse/             ← Browse page, filter panel
+│   │   └── cook/               ← Cook mode components
+│   ├── lib/
+│   │   ├── db/                 ← Prisma client + query helpers
+│   │   ├── ai/                 ← AI extraction service
+│   │   ├── auth/               ← Auth helpers
+│   │   ├── schemas/            ← Zod validation schemas
+│   │   └── utils/              ← Shared utilities
+│   ├── styles/
+│   │   └── tokens.css          ← Design tokens (colours, spacing, type)
+│   └── types/                  ← Shared TypeScript type definitions
+├── prisma/                         ← schema.prisma + migrations (Prisma CLI exception)
+│   ├── schema.prisma
+│   └── seed.ts
+├── tests/                          ← Test files (Vitest / Playwright exception)
+│   ├── unit/
+│   ├── integration/
+│   └── e2e/
+├── docs/                           ← Documentation only (no source code)
+│   └── builders/
+│       ├── README.md           ← You are here
+│       ├── OVERVIEW.md
+│       ├── TASK_SPEC.md
+│       ├── T-01 … T-20
+│       └── APPENDIX-*.md
+├── next.config.ts                  ← Root config files only
+├── tsconfig.json
+├── tailwind.config.ts
+├── package.json
+└── .env.local                      ← Never committed
 ```
+
+> ⚠️ **Rule:** If you are creating a `.ts`, `.tsx`, `.js`, or `.css` file and it is not a root config file, it belongs inside `/src`. No exceptions.
 
 ---
 
@@ -162,4 +194,4 @@ stepdish/
 
 ---
 
-*For the full multi-phase plan (T-01 to T-40), see [OVERVIEW.md](./OVERVIEW.md).*
+*For the full multi-phase plan (T-001 to T-040), see [OVERVIEW.md](./OVERVIEW.md).*
