@@ -3,7 +3,8 @@
   position: sticky;
   top: 0;
   z-index: 100;
-  background: var(--color-surface);
+  /* Semi-transparent background so backdrop-filter blur has a visible effect */
+  background: oklch(from var(--color-surface) l c h / 0.85);
   border-bottom: 1px solid oklch(from var(--color-text) l c h / 0.08);
   backdrop-filter: blur(12px);
   -webkit-backdrop-filter: blur(12px);

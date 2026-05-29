@@ -1,13 +1,13 @@
 import Link from 'next/link'
-import {
-  SignedIn,
-  SignedOut,
-  UserButton,
-  currentUser,
-} from '@clerk/nextjs'
+import { SignedIn, SignedOut, UserButton } from '@clerk/nextjs'
+import { auth } from '@clerk/nextjs/server'
+import '@/styles/header.css'
 
+// Uses auth() (JWT-based, zero network cost) instead of currentUser() to avoid
+// an extra Clerk API round-trip on every page render.
 export async function Header() {
-  const user = await currentUser()
+  const { sessionClaims } = await auth()
+  const firstName = (sessionClaims?.firstName as string | undefined) ?? null
 
   return (
     <header className="site-header">
@@ -35,9 +35,9 @@ export async function Header() {
         {/* Nav actions */}
         <nav className="header-nav" aria-label="Main navigation">
           <SignedIn>
-            <span className="header-display-name">
-              {user?.firstName ?? user?.emailAddresses[0]?.emailAddress ?? ''}
-            </span>
+            {firstName && (
+              <span className="header-display-name">{firstName}</span>
+            )}
             <Link href="/dashboard" className="header-link">
               Dashboard
             </Link>
