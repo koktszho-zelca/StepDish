@@ -101,7 +101,7 @@ You will fill this in as you complete each section below.
 1. After the cluster is created, go to **SQL Users**.
 2. Click **Add User**.
 3. Username: `stepdish`.
-4. Click **Generate & Save Password** — copy the password now, you won’t see it again.
+4. Click **Generate & Save Password** — copy the password now, you won't see it again.
 
 ### Get the connection string
 1. Click **Connect** on your cluster.
@@ -180,7 +180,7 @@ NEXT_PUBLIC_CLERK_AFTER_SIGN_UP_URL="/dashboard"
 1. Go to **API Keys** in the left sidebar.
 2. Click **Create new secret key**.
 3. Name it `stepdish-prod`.
-4. Copy the key — it starts with `sk-...` and you won’t see it again.
+4. Copy the key — it starts with `sk-...` and you won't see it again.
 
 ### Update `.env.local`
 ```bash
@@ -193,7 +193,7 @@ OPENAI_PROVIDER="openai"   # change to "azure" if testing locally from HK withou
 ## 5. Azure OpenAI — HK Local Dev Fallback
 
 > **Purpose:** Lets you test AI extraction locally from HK without a VPN.
-> **Skip this if** you have a VPN or won’t be testing AI features locally.
+> **Skip this if** you have a VPN or won't be testing AI features locally.
 
 ### Sign up for Azure
 1. Go to [https://azure.microsoft.com/en-us/free](https://azure.microsoft.com/en-us/free).
@@ -268,12 +268,17 @@ AZURE_OPENAI_DEPLOYMENT="gpt-4o"
 3. Permissions: **Object Read & Write**.
 4. Specify bucket: `stepdish-images`.
 5. Click **Create API Token**.
-6. Copy the **Access Key ID** and **Secret Access Key** — you won’t see them again.
+6. Copy the **Access Key ID** and **Secret Access Key** — you won't see them again.
 7. Also note your **Account ID** (visible in the URL: `dash.cloudflare.com/<account-id>/`).
+
+### Install required packages
+```bash
+pnpm add @aws-sdk/client-s3 @aws-sdk/s3-request-presigner
+```
 
 ### Update `.env.local`
 ```bash
-R2_ACCOUNT_ID="your-account-id"
+CLOUDFLARE_ACCOUNT_ID="your-account-id"
 R2_ACCESS_KEY_ID="your-access-key-id"
 R2_SECRET_ACCESS_KEY="your-secret-access-key"
 R2_BUCKET_NAME="stepdish-images"
@@ -296,7 +301,7 @@ R2_PUBLIC_URL="https://pub-xxxx.r2.dev"
 3. Add the DNS records shown to your domain registrar.
 4. Click **Verify** once DNS has propagated (can take up to 48 hours).
 
-> If you don’t have a domain yet, Resend provides a shared `onboarding@resend.dev` address for testing. Use that for now and add your domain later.
+> If you don't have a domain yet, Resend provides a shared `onboarding@resend.dev` address for testing. Use that for now and add your domain later.
 
 ### Create an API key
 1. Go to **API Keys → Create API Key**.
@@ -389,7 +394,7 @@ OPENAI_PROVIDER="openai"
 # AZURE_OPENAI_DEPLOYMENT="gpt-4o"
 
 # ── Storage (Cloudflare R2) ───────────────────────────────────
-R2_ACCOUNT_ID="..."
+CLOUDFLARE_ACCOUNT_ID="..."
 R2_ACCESS_KEY_ID="..."
 R2_SECRET_ACCESS_KEY="..."
 R2_BUCKET_NAME="stepdish-images"
@@ -475,7 +480,7 @@ Quick smoke tests:
 | Problem | Fix |
 |---|---|
 | `Error: DATABASE_URL is not set` | Check `.env.local` has the full CockroachDB connection string |
-| `Prisma: Can’t reach database server` | Check the CockroachDB cluster is running and the password is correct |
+| `Prisma: Can't reach database server` | Check the CockroachDB cluster is running and the password is correct |
 | `ClerkError: Missing publishable key` | Check `NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY` is set (must start with `NEXT_PUBLIC_`) |
 | `OpenAI 403 Forbidden` (local dev) | You are on a HK IP. Use a VPN or switch to Azure (`OPENAI_PROVIDER="azure"`) |
 | `R2: Access Denied` | Check `R2_ACCESS_KEY_ID` and `R2_SECRET_ACCESS_KEY` are correct; confirm the token has write access to the bucket |
